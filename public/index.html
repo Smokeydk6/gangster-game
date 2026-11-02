@@ -1,34 +1,46 @@
 <!DOCTYPE html>
-<html lang="da">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Gangster Empire</title>
+    <title>Gang Empire</title>
     <style>
         body { font-family: sans-serif; text-align: center; background: #222; color: white; }
-        #game-grid { display: grid; grid-template-columns: repeat(8, 40px); gap: 5px; justify-content: center; margin-top: 20px; }
-        .tile { width: 40px; height: 40px; background: #444; border: 1px solid #666; cursor: pointer; }
+        #grid { display: grid; grid-template-columns: repeat(4, 50px); gap: 5px; justify-content: center; }
+        .tile { width: 50px; height: 50px; background: #444; border: 1px solid #666; cursor: pointer; }
     </style>
 </head>
 <body>
-    <h1>Gangster Empire</h1>
-    <div id="stats">Indlæser penge...</div>
-    <div id="game-grid"></div>
+    <h1>Gang Empire</h1>
+    <p>Penge: <span id="money">100</span> | Territorier: <span id="territories">0</span></p>
+    <div id="grid"></div>
 
     <script>
-        // Hent data fra serveren
-        fetch('/api/game')
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('stats').innerText = "Penge: $" + data.money;
-            });
-
-        // Lav 64 felter
-        const grid = document.getElementById('game-grid');
-        for(let i = 0; i < 64; i++) {
-            let div = document.createElement('div');
-            div.className = 'tile';
-            grid.appendChild(div);
+        async function updateUI() {
+            const res = await fetch('/api/state');
+            const data = await res.json();
+            document.getElementById('money').innerText = data.money;
+            document.getElementById('territories').innerText = data.territories;
         }
+
+        async function attack() {
+            const res = await fetch('/api/attack', { method: 'POST' });
+            const data = await res.json();
+            if (data.success) {
+                updateUI();
+            } else {
+                alert(data.message);
+            }
+        }
+
+        // Lav gitteret
+        const grid = document.getElementById('grid');
+        for(let i=0; i<16; i++) {
+            let tile = document.createElement('div');
+            tile.className = 'tile';
+            tile.onclick = attack;
+            grid.appendChild(tile);
+        }
+
+        updateUI();
     </script>
 </body>
 </html>
