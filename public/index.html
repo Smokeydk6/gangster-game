@@ -1,1 +1,34 @@
-g
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Gangster Empire</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #222; color: white; }
+        #game-grid { display: grid; grid-template-columns: repeat(8, 40px); gap: 5px; justify-content: center; margin-top: 20px; }
+        .tile { width: 40px; height: 40px; background: #444; border: 1px solid #666; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Gangster Empire</h1>
+    <div id="stats">Indlæser penge...</div>
+    <div id="game-grid"></div>
+
+    <script>
+        // Hent data fra serveren
+        fetch('/api/game')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('stats').innerText = "Penge: $" + data.money;
+            });
+
+        // Lav 64 felter
+        const grid = document.getElementById('game-grid');
+        for(let i = 0; i < 64; i++) {
+            let div = document.createElement('div');
+            div.className = 'tile';
+            grid.appendChild(div);
+        }
+    </script>
+</body>
+</html>
